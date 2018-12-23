@@ -26,7 +26,7 @@
 #define ERROR_JTAG_INIT_FAILED -1
 #define ERROR_OK 1
 
-uint32_t bcm2835_peri_base = 0x20000000;
+uint32_t bcm2835_peri_base = 0x3F000000;
 #define BCM2835_GPIO_BASE	(bcm2835_peri_base + 0x200000) /* GPIO controller */
 
 #define BCM2835_PADS_GPIO_0_27		(bcm2835_peri_base + 0x100000)
@@ -55,13 +55,13 @@ static int bcm2835gpio_init(void);
 static int bcm2835gpio_quit(void);
 
 /* GPIO numbers for each signal. Negative values are invalid */
-static int tck_gpio = 11;
-static int tms_gpio = 25;
-static int tdi_gpio = 10;
-static int tdo_gpio = 9;
+static int tck_gpio = 4;
+static int tms_gpio = 17;
+static int tdi_gpio = 27;
+static int tdo_gpio = 22;
 
 /* Transition delay coefficients */
-static unsigned int jtag_delay = 50;
+static unsigned int jtag_delay = 1;
 
 static uint32_t bcm2835gpio_xfer(int n, uint32_t tms, uint32_t tdi)
 {
@@ -79,6 +79,12 @@ static uint32_t bcm2835gpio_xfer(int n, uint32_t tms, uint32_t tdi)
 
 static int bcm2835gpio_read(void)
 {
+        // the first read back is unreliable, so do a dummy ready before returning data
+        // lev = GPIO_LEV;
+        GPIO_SET = 0;
+        GPIO_SET = 0;
+        GPIO_SET = 0;
+  
 	return !!(GPIO_LEV & 1<<tdo_gpio);
 }
 
@@ -87,6 +93,8 @@ static void bcm2835gpio_write(int tck, int tms, int tdi)
 	uint32_t set = tck<<tck_gpio | tms<<tms_gpio | tdi<<tdi_gpio;
 	uint32_t clear = !tck<<tck_gpio | !tms<<tms_gpio | !tdi<<tdi_gpio;
 
+        GPIO_SET = 0;
+	// lev = GPIO_LEV;
 	GPIO_SET = set;
 	GPIO_CLR = clear;
 
@@ -122,7 +130,7 @@ static int bcm2835gpio_init(void)
 	}
 
 	/* set 4mA drive strength, slew rate limited, hysteresis on */
-	pads_base[BCM2835_PADS_GPIO_0_27_OFFSET] = 0x5a000008 + 1;
+	pads_base[BCM2835_PADS_GPIO_0_27_OFFSET] = 0x5a000008 + 4;
 
 	/*
 	 * Configure TDO as an input, and TDI, TCK, TMS
