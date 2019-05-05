@@ -14,7 +14,7 @@ JTAG uses 4 signals, TMS, TDI, TDO and, TCK.
 From the Raspberry Pi perspective, TMS, TDI and TCK are outputs, and TDO is an input.
 The pin mappings for the Raspberry Pi header are:
 ```
-TMS=25, TDI=10, TCK=11, TDO=9
+TMS=GPIO17, TDI=GPIO27, TCK=GPIO4, TDO=GPIO22
 ```
 In addition a ground connection is required. Pin 23 is a conveniently placed GND.
 
