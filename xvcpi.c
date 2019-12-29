@@ -55,10 +55,10 @@ static int bcm2835gpio_init(void);
 static int bcm2835gpio_quit(void);
 
 /* GPIO numbers for each signal. Negative values are invalid */
-static int tck_gpio = 4;
-static int tms_gpio = 17;
-static int tdi_gpio = 27;
-static int tdo_gpio = 22;
+static int tck_gpio = 12;
+static int tms_gpio = 16;
+static int tdi_gpio = 20;
+static int tdo_gpio = 21;
 
 /* Transition delay coefficients */
 static unsigned int jtag_delay = 1;
@@ -306,8 +306,11 @@ int main(int argc, char **argv) {
 
    opterr = 0;
 
-   while ((c = getopt(argc, argv, "v")) != -1)
+   while ((c = getopt(argc, argv, "v4")) != -1)
       switch (c) {
+      case '4':
+  	 bcm2835_peri_base = 0xfe000000;
+         break;
       case 'v':
          verbose = 1;
          break;
