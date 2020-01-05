@@ -8,3 +8,6 @@ $(PROG): $(PROG).o
 
 clean:
 	rm -f $(PROG) *.o
+
+install: all
+	install -Dt /usr/local/bin/ xvcpi
